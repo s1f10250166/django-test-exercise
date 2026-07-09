@@ -35,6 +35,21 @@ def detail(request, task_id):
     }
     return render(request, 'todo/detail.html', context)
 
+def update(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        raise Http404("Task does not exist")
+
+    if request.method == 'POST':
+        task.title = request.POST['title']
+        due_at_value = request.POST.get('due_at')
+        task.due_at = make_aware(parse_datetime(due_at_value)) if due_at_value else None
+        task.save()
+
+    return redirect('detail', task_id=task_id)
+
+
 def delete(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
