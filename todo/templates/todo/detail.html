@@ -26,6 +26,15 @@
       {% endif %}
     </ul>
 
+    <form action="{% url 'toggle_completed' task.id %}" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'detail' task.id %}">
+      <label>
+        <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
+        完了にする
+      </label>
+    </form>
+
     <div>
       <a href="{% url 'index' %}">Top</a>
       | <a href="{% url 'update' task.id %}">Edit</a>
