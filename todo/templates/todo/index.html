@@ -7,72 +7,81 @@
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" href="{% static 'todo/style.css' %}">
+    <script src="{% static 'todo/theme.js' %}" defer></script>
   </head>
 
   <body>
-    <h1>Sample To Do Application</h1>
-    <style>
-      .search-bar { margin-bottom: 8px; }
-      .search-bar input[name="q"] { width: 220px; }
-      .controls { margin-top: 8px; }
-      .controls a { margin-right: 8px; }
-    </style>
-    <p>You can submit tasks from the following form.</p>
-    <form action="{% url 'index' %}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title">
+    <div class="container">
+      <div class="header-row">
+        <h1>Sample To Do Application</h1>
+        <div class="header-actions">
+          <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">Toggle Theme</button>
+        </div>
       </div>
-      <div>
-        <label for="descriptionInput">Description</label><br>
-        <textarea id="descriptionInput" name="description" placeholder="Input description"></textarea>
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
 
-    <div class="search-bar">
-      <form action="{% url 'index' %}" method="get">
-        <input name="q" type="text" placeholder="Search title" value="{{ q }}">
-        <button type="submit">Search</button>
-      </form>
-    </div>
-    <div class="controls">
-      <a href="{% url 'index' %}?order=due{% if q %}&q={{ q }}{% endif %}">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
-    </div>
-
-    {% for task in tasks %}
-    <div class="text">
-      <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
-      <ul>
-        <li>Posted at: {{ task.posted_at }}</li>
-        {% if task.due_at %}
-        <li>Due at: {{ task.due_at }}</li>
-        {% endif %}
-        {% if task.completed %}
-        <li>Status: Completed</li>
-        {% else %}
-        <li>Status: Not Completed</li>
-        {% endif %}
-      </ul>
-      <form action="{% url 'toggle_completed' task.id %}" method="post">
+      <p class="muted">You can submit tasks from the following form.</p>
+      <form action="{% url 'index' %}" method="post">
         {% csrf_token %}
-        <input type="hidden" name="next" value="{% url 'index' %}">
-        <label>
-          <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
-          完了にする
-        </label>
+        <div class="row">
+          <label for="titleInput">Title</label>
+          <input id="titleInput" name="title" type="text" placeholder="Input title">
+        </div>
+        <div class="row">
+          <label for="descriptionInput">Description</label>
+          <textarea id="descriptionInput" name="description" placeholder="Input description"></textarea>
+        </div>
+        <div class="row">
+          <label for="dueInput">Due at:</label>
+          <input id="dueInput" name="due_at" type="datetime-local">
+        </div>
+        <div class="row">
+          <button type="submit">Submit</button>
+        </div>
       </form>
+
+      <div class="search-bar">
+        <form action="{% url 'index' %}" method="get" aria-label="Search tasks">
+          <input name="q" type="text" placeholder="Search title" value="{{ q }}" aria-label="Search by title">
+          <button type="submit">Search</button>
+        </form>
+      </div>
+      <div class="controls" role="navigation" aria-label="sorting">
+        <a href="{% url 'index' %}?order=due{% if q %}&q={{ q }}{% endif %}">Sort by Due Date</a> |
+        <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
+      </div>
+
+      {% for task in tasks %}
+      <article class="task" role="article">
+        <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
+        {% if task.description %}<p class="muted">{{ task.description|linebreaksbr }}</p>{% endif %}
+        <ul>
+          <li>Posted at: {{ task.posted_at }}</li>
+          {% if task.due_at %}
+          <li>Due at: {{ task.due_at }}</li>
+          {% endif %}
+          <li>
+            {% if task.completed %}
+            <span class="badge completed">Completed</span>
+            {% else %}
+            <span class="badge pending">Not Completed</span>
+            {% endif %}
+          </li>
+        </ul>
+        <form action="{% url 'toggle_completed' task.id %}" method="post" aria-label="Toggle completed">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'index' %}">
+          <label>
+            <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %} aria-label="Mark complete">
+            完了にする
+          </label>
+        </form>
+      </article>
+      {% endfor %}
+
+      <div class="footer-links">
+        <a href="#">Help</a>
+      </div>
     </div>
-    {% endfor %}
   </body>
 
 </html>
