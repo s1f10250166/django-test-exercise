@@ -15,10 +15,9 @@ def index(request):
         task.save()
     # search query
     q = request.GET.get('q', '').strip()
+    base = Task.objects.filter(completed=False)
     if q:
-        base = Task.objects.filter(title__icontains=q)
-    else:
-        base = Task.objects.all()
+        base = base.filter(title__icontains=q)
 
     if request.GET.get('order') == 'due':
         tasks = base.order_by('due_at')
@@ -30,6 +29,15 @@ def index(request):
         'q': q,
     }
     return render(request, 'todo/index.html', context)
+
+
+def completed_list(request):
+    tasks = Task.objects.filter(completed=True).order_by('-posted_at')
+
+    context = {
+        'tasks': tasks
+    }
+    return render(request, 'todo/completed.html', context)
 
 
 def detail(request, task_id):
