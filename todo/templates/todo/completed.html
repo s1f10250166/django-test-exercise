@@ -10,6 +10,7 @@
   </head>
 
   <body>
+    {% include 'todo/_theme_toggle.html' %}
     <h1>完了したタスク一覧</h1>
 
     <div>
@@ -24,6 +25,8 @@
         <li>Posted at: {{ task.posted_at }}</li>
         {% if task.due_at %}
         <li>Due at: {{ task.due_at }}</li>
+        {% else %}
+        <li>期限：未設定</li>
         {% endif %}
       </ul>
       <form action="{% url 'toggle_completed' task.id %}" method="post">

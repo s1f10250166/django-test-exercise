@@ -10,8 +10,28 @@
   --success: #2f855a;
 }
 
+html.dark {
+  --bg: #1a202c;
+  --surface: #2d3748;
+  --primary: #63b3ed;
+  --primary-dark: #4299e1;
+  --text: #f7fafc;
+  --muted: #a0aec0;
+  --border: #4a5568;
+  --danger: #fc8181;
+  --success: #68d391;
+}
+
 * {
   box-sizing: border-box;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
 }
 
 body {

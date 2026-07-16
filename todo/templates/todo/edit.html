@@ -10,6 +10,7 @@
   </head>
 
   <body>
+    {% include 'todo/_theme_toggle.html' %}
     <h1>Edit task</h1>
     <p>You can edit tasks from the following form.</p>
     <form action="{% url 'update' task.id%}" method="post">
