@@ -132,8 +132,32 @@ class TodoViewTestCase(TestCase):
     def test_detail_get_fail(self):
         client = Client()
         response = client.get('/1/')
-        
+
         self.assertEqual(response.status_code, 404)
+
+    def test_detail_shows_description(self):
+        task = Task(title='task1', description='This is the task body.')
+        task.save()
+        client = Client()
+        response = client.get('/{}/'.format(task.pk))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/detail.html')
+        self.assertContains(response, 'This is the task body.')
+
+    def test_update_post_saves_description(self):
+        task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+        response = client.post('/{}/update'.format(task.pk), {
+            'title': 'task1',
+            'description': 'updated body',
+            'due_at': '2024-08-01 00:00:00'
+        })
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertEqual(task.description, 'updated body')
 
     def test_delete_task(self):
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
@@ -173,3 +197,28 @@ class TodoViewTestCase(TestCase):
         response = client.post('/999/toggle')
 
         self.assertEqual(response.status_code, 404)
+
+    def test_search_found(self):
+        task1 = Task(title='Buy milk')
+        task1.save()
+        task2 = Task(title='Team meeting')
+        task2.save()
+        client = Client()
+
+        response = client.get('/?q=Buy')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/index.html')
+        self.assertEqual(len(response.context['tasks']), 1)
+        self.assertEqual(response.context['tasks'][0], task1)
+
+    def test_search_not_found(self):
+        task1 = Task(title='Buy milk')
+        task1.save()
+        client = Client()
+
+        response = client.get('/?q=xyz')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/index.html')
+        self.assertEqual(len(response.context['tasks']), 0)

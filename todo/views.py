@@ -10,16 +10,24 @@ from todo.models import Task
 def index(request):
     if request.method == 'POST':
         task = Task(title=request.POST['title'],
+                    description=request.POST.get('description', ''),
                     due_at=make_aware(parse_datetime(request.POST['due_at'])))
         task.save()
+    # search query
+    q = request.GET.get('q', '').strip()
+    if q:
+        base = Task.objects.filter(title__icontains=q)
+    else:
+        base = Task.objects.all()
 
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = base.order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = base.order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'q': q,
     }
     return render(request, 'todo/index.html', context)
 
@@ -80,6 +88,7 @@ def update(request, task_id):
         raise Http404("Task does not exist")
     if request.method == 'POST':
         task.title = request.POST['title']
+        task.description = request.POST.get('description', '')
         task.due_at = make_aware(parse_datetime(request.POST['due_at']))
         task.save()
         return redirect(detail, task_id)
