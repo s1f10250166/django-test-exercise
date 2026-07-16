@@ -3,13 +3,14 @@
 <html lang="ja">
 
   <head>
-    <title>To Do Application</title>
+    <title>{{ task.title }} - To Do Application</title>
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" href="{% static 'todo/style.css' %}">
   </head>
 
   <body>
+    {% include 'todo/_theme_toggle.html' %}
     <h1>{{ task.title }}</h1>
     {% if task.description %}
     <p>{{ task.description|linebreaksbr }}</p>
@@ -18,6 +19,8 @@
       <li>Posted at: {{ task.posted_at }}</li>
       {% if task.due_at %}
       <li>Due at: {{ task.due_at }}</li>
+      {% else %}
+      <li>期限：未設定</li>
       {% endif %}
       {% if task.completed %}
       <li>Status: Completed</li>

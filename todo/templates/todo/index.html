@@ -10,6 +10,7 @@
   </head>
 
   <body>
+    {% include 'todo/_theme_toggle.html' %}
     <h1>Sample To Do Application</h1>
     <style>
       .search-bar { margin-bottom: 8px; }
@@ -46,7 +47,8 @@
     </div>
     <div class="controls">
       <a href="{% url 'index' %}?order=due{% if q %}&q={{ q }}{% endif %}">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
+      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a> |
+      <a href="{% url 'completed_list' %}">完了したタスク一覧</a>
     </div>
 
     {% for task in tasks %}
@@ -56,6 +58,8 @@
         <li>Posted at: {{ task.posted_at }}</li>
         {% if task.due_at %}
         <li>Due at: {{ task.due_at }}</li>
+        {% else %}
+        <li>期限：未設定</li>
         {% endif %}
         {% if task.completed %}
         <li>Status: Completed</li>
