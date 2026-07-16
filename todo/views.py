@@ -72,6 +72,19 @@ def toggle_completed(request, task_id):
     return redirect(request.POST.get('next') or 'index')
 
 
+def bulk(request):
+    if request.method == 'POST':
+        ids = request.POST.getlist('ids')
+        tasks = Task.objects.filter(pk__in=ids)
+        action = request.POST.get('action')
+        if action == 'complete':
+            tasks.update(completed=True)
+        elif action == 'delete':
+            tasks.delete()
+
+    return redirect('index')
+
+
 def delete(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
