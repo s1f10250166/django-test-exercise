@@ -182,6 +182,28 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.url, '/')
         self.assertFalse(Task.objects.filter(pk=task.pk).exists())
 
+    def test_duplicate_task(self):
+        task = Task(title='task1', description='body', due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        task.save()
+        client = Client()
+
+        response = client.post('/{}/duplicate'.format(task.pk))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Task.objects.count(), 2)
+        copy = Task.objects.exclude(pk=task.pk).get()
+        self.assertEqual(copy.title, 'task1')
+        self.assertEqual(copy.description, 'body')
+        self.assertEqual(copy.due_at, task.due_at)
+        self.assertFalse(copy.completed)
+        self.assertEqual(response.url, '/{}/'.format(copy.pk))
+
+    def test_duplicate_task_fail(self):
+        client = Client()
+        response = client.post('/999/duplicate')
+
+        self.assertEqual(response.status_code, 404)
+
     def test_toggle_completed_marks_done(self):
         task = Task(title='task1')
         task.save()

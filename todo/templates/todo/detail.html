@@ -38,6 +38,11 @@
       </label>
     </form>
 
+    <form action="{% url 'duplicate' task.id %}" method="post" style="display: inline;">
+      {% csrf_token %}
+      <button type="submit">複製</button>
+    </form>
+
     <div>
       <a href="{% url 'index' %}">Top</a>
       | <a href="{% url 'update' task.id %}">Edit</a>
