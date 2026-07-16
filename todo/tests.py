@@ -145,3 +145,31 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/')
         self.assertFalse(Task.objects.filter(pk=task.pk).exists())
+
+    def test_toggle_completed_marks_done(self):
+        task = Task(title='task1')
+        task.save()
+        client = Client()
+
+        response = client.post('/{}/toggle'.format(task.pk))
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertTrue(task.completed)
+
+    def test_toggle_completed_marks_undone(self):
+        task = Task(title='task1', completed=True)
+        task.save()
+        client = Client()
+
+        response = client.post('/{}/toggle'.format(task.pk))
+
+        self.assertEqual(response.status_code, 302)
+        task.refresh_from_db()
+        self.assertFalse(task.completed)
+
+    def test_toggle_completed_fail(self):
+        client = Client()
+        response = client.post('/999/toggle')
+
+        self.assertEqual(response.status_code, 404)

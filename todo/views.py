@@ -51,6 +51,19 @@ def update(request, task_id):
     return redirect('detail', task_id=task_id)
 
 
+def toggle_completed(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        raise Http404("Task does not exist")
+
+    if request.method == 'POST':
+        task.completed = not task.completed
+        task.save()
+
+    return redirect(request.POST.get('next') or 'index')
+
+
 def delete(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)
