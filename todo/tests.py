@@ -235,6 +235,59 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 0)
 
+    def test_bulk_complete_only_selected(self):
+        task1 = Task(title='task1')
+        task1.save()
+        task2 = Task(title='task2')
+        task2.save()
+        task3 = Task(title='task3')
+        task3.save()
+        client = Client()
+
+        response = client.post('/bulk', {
+            'ids': [task1.pk, task3.pk],
+            'action': 'complete',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/')
+        task1.refresh_from_db()
+        task2.refresh_from_db()
+        task3.refresh_from_db()
+        self.assertTrue(task1.completed)
+        self.assertFalse(task2.completed)
+        self.assertTrue(task3.completed)
+
+    def test_bulk_delete_only_selected(self):
+        task1 = Task(title='task1')
+        task1.save()
+        task2 = Task(title='task2')
+        task2.save()
+        task3 = Task(title='task3')
+        task3.save()
+        client = Client()
+
+        response = client.post('/bulk', {
+            'ids': [task1.pk, task3.pk],
+            'action': 'delete',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/')
+        self.assertFalse(Task.objects.filter(pk=task1.pk).exists())
+        self.assertTrue(Task.objects.filter(pk=task2.pk).exists())
+        self.assertFalse(Task.objects.filter(pk=task3.pk).exists())
+
+    def test_bulk_no_selection_does_nothing(self):
+        task1 = Task(title='task1')
+        task1.save()
+        client = Client()
+
+        response = client.post('/bulk', {'action': 'delete'})
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Task.objects.filter(pk=task1.pk).exists())
+
     def test_completed_list_get(self):
         active = Task(title='active task')
         active.save()

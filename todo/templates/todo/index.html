@@ -8,6 +8,15 @@
     <meta name="author" content="INIAD">
     <link rel="stylesheet" href="{% static 'todo/style.css' %}">
     <script src="{% static 'todo/theme.js' %}" defer></script>
+    <style>
+      .search-bar { margin-bottom: 8px; }
+      .search-bar input[name="q"] { width: 220px; }
+      .controls { margin-top: 8px; }
+      .controls a { margin-right: 8px; }
+      .bulk-actions { margin: 8px auto; }
+      .bulk-actions button { margin-right: 8px; }
+      .select { display: inline-flex; align-items: center; gap: 4px; font-size: 0.9rem; margin-bottom: 8px; }
+    </style>
   </head>
 
   <body>
@@ -18,7 +27,7 @@
           {% include 'todo/_theme_toggle.html' %}
         </div>
       </div>
-    
+
       <p class="muted">You can submit tasks from the following form.</p>
       <form action="{% url 'index' %}" method="post">
         {% csrf_token %}
@@ -50,8 +59,19 @@
         <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
       </div>
 
+      <form id="bulkForm" action="{% url 'bulk' %}" method="post" class="bulk-actions">
+        {% csrf_token %}
+        <button type="submit" name="action" value="complete">まとめて完了</button>
+        <button type="submit" name="action" value="delete">まとめて削除</button>
+      </form>
+
       {% for task in tasks %}
       <article class="task" role="article">
+        <label class="select">
+          <input type="checkbox" name="ids" value="{{ task.id }}" form="bulkForm">
+          選択
+        </label>
+
         <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
         {% if task.description %}<p class="muted">{{ task.description|linebreaksbr }}</p>{% endif %}
         <ul>
