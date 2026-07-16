@@ -145,3 +145,28 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, '/')
         self.assertFalse(Task.objects.filter(pk=task.pk).exists())
+
+    def test_search_found(self):
+        task1 = Task(title='Buy milk')
+        task1.save()
+        task2 = Task(title='Team meeting')
+        task2.save()
+        client = Client()
+
+        response = client.get('/?q=Buy')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/index.html')
+        self.assertEqual(len(response.context['tasks']), 1)
+        self.assertEqual(response.context['tasks'][0], task1)
+
+    def test_search_not_found(self):
+        task1 = Task(title='Buy milk')
+        task1.save()
+        client = Client()
+
+        response = client.get('/?q=xyz')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/index.html')
+        self.assertEqual(len(response.context['tasks']), 0)

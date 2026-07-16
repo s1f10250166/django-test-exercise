@@ -11,6 +11,12 @@
 
   <body>
     <h1>Sample To Do Application</h1>
+    <style>
+      .search-bar { margin-bottom: 8px; }
+      .search-bar input[name="q"] { width: 220px; }
+      .controls { margin-top: 8px; }
+      .controls a { margin-right: 8px; }
+    </style>
     <p>You can submit tasks from the following form.</p>
     <form action="{% url 'index' %}" method="post">
       {% csrf_token %}
@@ -28,9 +34,15 @@
     </form>
     <br>
 
-    <div>
-      <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
+    <div class="search-bar">
+      <form action="{% url 'index' %}" method="get">
+        <input name="q" type="text" placeholder="Search title" value="{{ q }}">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    <div class="controls">
+      <a href="{% url 'index' %}?order=due{% if q %}&q={{ q }}{% endif %}">Sort by Due Date</a> |
+      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
     </div>
 
     {% for task in tasks %}
