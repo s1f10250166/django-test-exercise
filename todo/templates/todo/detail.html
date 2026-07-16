@@ -7,41 +7,51 @@
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" href="{% static 'todo/style.css' %}">
+    <script src="{% static 'todo/theme.js' %}" defer></script>
   </head>
 
   <body>
-    {% include 'todo/_theme_toggle.html' %}
-    <h1>{{ task.title }}</h1>
-    {% if task.description %}
-    <p>{{ task.description|linebreaksbr }}</p>
-    {% endif %}
-    <ul>
-      <li>Posted at: {{ task.posted_at }}</li>
-      {% if task.due_at %}
-      <li>Due at: {{ task.due_at }}</li>
-      {% else %}
-      <li>期限：未設定</li>
-      {% endif %}
-      {% if task.completed %}
-      <li>Status: Completed</li>
-      {% else %}
-      <li>Status: Not Completed</li>
-      {% endif %}
-    </ul>
 
-    <form action="{% url 'toggle_completed' task.id %}" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{% url 'detail' task.id %}">
-      <label>
-        <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %}>
-        完了にする
-      </label>
-    </form>
+    <div class="container">
+      <div class="header-row">
+        <h1>{{ task.title }}</h1>
+        <div class="header-actions">
+          <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">Toggle Theme</button>
+        </div>
+      </div>
 
-    <div>
-      <a href="{% url 'index' %}">Top</a>
-      | <a href="{% url 'update' task.id %}">Edit</a>
-      | <a href="{% url 'delete' task.id %}">Delete</a>
+      {% if task.description %}
+      <p class="muted">{{ task.description|linebreaksbr }}</p>
+
+      {% endif %}
+      <ul>
+        <li>Posted at: {{ task.posted_at }}</li>
+        {% if task.due_at %}
+        <li>Due at: {{ task.due_at }}</li>
+        {% endif %}
+        <li>
+          {% if task.completed %}
+          <span class="badge completed">Completed</span>
+          {% else %}
+          <span class="badge pending">Not Completed</span>
+          {% endif %}
+        </li>
+      </ul>
+
+      <form action="{% url 'toggle_completed' task.id %}" method="post" aria-label="Toggle completed">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'detail' task.id %}">
+        <label>
+          <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %} aria-label="Mark complete">
+          完了にする
+        </label>
+      </form>
+
+      <div class="footer-links">
+        <a href="{% url 'index' %}">Top</a>
+        | <a href="{% url 'update' task.id %}">Edit</a>
+        | <a href="{% url 'delete' task.id %}">Delete</a>
+      </div>
     </div>
   </body>
 
