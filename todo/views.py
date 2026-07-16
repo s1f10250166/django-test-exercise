@@ -67,6 +67,23 @@ def update(request, task_id):
     return redirect('detail', task_id=task_id)
 
 
+def duplicate(request, task_id):
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        raise Http404("Task does not exist")
+
+    if request.method == 'POST':
+        copy = Task.objects.create(
+            title=task.title,
+            description=task.description,
+            due_at=task.due_at,
+        )
+        return redirect('detail', task_id=copy.id)
+
+    return redirect('detail', task_id=task_id)
+
+
 def toggle_completed(request, task_id):
     try:
         task = Task.objects.get(pk=task_id)

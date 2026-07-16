@@ -22,8 +22,8 @@
 
       {% if task.description %}
       <p class="muted">{{ task.description|linebreaksbr }}</p>
-
       {% endif %}
+
       <ul>
         <li>Posted at: {{ task.posted_at }}</li>
         {% if task.due_at %}
@@ -45,6 +45,11 @@
           <input type="checkbox" onchange="this.form.submit()" {% if task.completed %}checked{% endif %} aria-label="Mark complete">
           完了にする
         </label>
+      </form>
+
+      <form action="{% url 'duplicate' task.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit">複製</button>
       </form>
 
       <div class="footer-links">
