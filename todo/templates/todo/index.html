@@ -46,7 +46,8 @@
     </div>
     <div class="controls">
       <a href="{% url 'index' %}?order=due{% if q %}&q={{ q }}{% endif %}">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a>
+      <a href="{% url 'index' %}?order=post{% if q %}&q={{ q }}{% endif %}">Sort by Posted Date</a> |
+      <a href="{% url 'completed_list' %}">完了したタスク一覧</a>
     </div>
 
     {% for task in tasks %}

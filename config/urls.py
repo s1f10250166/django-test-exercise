@@ -21,6 +21,7 @@ from todo import views as todo_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', todo_views.index, name='index'),
+    path('completed/', todo_views.completed_list, name='completed_list'),
     path('<int:task_id>/', todo_views.detail, name='detail'),
     path('<int:task_id>/update', todo_views.update, name='update'),
     path('<int:task_id>/toggle', todo_views.toggle_completed, name='toggle_completed'),
