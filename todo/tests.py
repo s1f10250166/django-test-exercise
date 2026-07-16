@@ -64,6 +64,18 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 0)
 
+    def test_index_get_hides_completed_tasks(self):
+        active = Task(title='active task')
+        active.save()
+        done = Task(title='done task', completed=True)
+        done.save()
+        client = Client()
+
+        response = client.get('/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context['tasks']), [active])
+
     def test_index_post(self):
         client = Client()
         data = {'title': 'Test Task', 'due_at': '2024-06-30 23:59:59'}
@@ -222,3 +234,16 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.templates[0].name, 'todo/index.html')
         self.assertEqual(len(response.context['tasks']), 0)
+
+    def test_completed_list_get(self):
+        active = Task(title='active task')
+        active.save()
+        done = Task(title='done task', completed=True)
+        done.save()
+        client = Client()
+
+        response = client.get('/completed/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/completed.html')
+        self.assertEqual(list(response.context['tasks']), [done])

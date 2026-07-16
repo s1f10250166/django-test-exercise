@@ -15,9 +15,9 @@
       <div class="header-row">
         <h1>Edit task</h1>
         <div class="header-actions">
-          <button id="themeToggle" class="theme-toggle" aria-pressed="false" title="Toggle theme">Toggle Theme</button>
+          {% include 'todo/_theme_toggle.html' %}
         </div>
-      </div>
+      </div
 
       <p class="muted">You can edit tasks from the following form.</p>
       <form action="{% url 'update' task.id%}" method="post">

@@ -3,7 +3,7 @@
 <html lang="ja">
 
   <head>
-    <title>To Do Application</title>
+    <title>{{ task.title }} - To Do Application</title>
     <meta charset="UTF-8">
     <meta name="author" content="INIAD">
     <link rel="stylesheet" href="{% static 'todo/style.css' %}">
@@ -11,6 +11,7 @@
   </head>
 
   <body>
+
     <div class="container">
       <div class="header-row">
         <h1>{{ task.title }}</h1>
@@ -21,6 +22,7 @@
 
       {% if task.description %}
       <p class="muted">{{ task.description|linebreaksbr }}</p>
+
       {% endif %}
       <ul>
         <li>Posted at: {{ task.posted_at }}</li>
